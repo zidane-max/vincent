@@ -192,11 +192,14 @@
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendButton');
         
-        // Configuration
+        // ============================================
+        // CONFIGURATION - METS TES URLs ICI
+        // ============================================
         const n8nBaseUrl = 'https://n8n-pro.kaeyros.org';
         const chatWebhookUrl = n8nBaseUrl + '/webhook/4b006081-ff51-46a1-9986-9ef046cd7255';
-        const corsProxyUrl = n8nBaseUrl + 'https://n8n-pro.kaeyros.org/webhook/cors-proxy'; // Ton proxy CORS
+        const corsProxyUrl = n8nBaseUrl + '/webhook/cors-proxy'; // ← TON PROXY CORS
         const downloadWebhookUrl = n8nBaseUrl + '/webhook/download-csv';
+        // ============================================
 
         // Intercepter les clics sur les liens de téléchargement CSV
         chatMessages.addEventListener('click', function(e) {
