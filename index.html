@@ -234,7 +234,10 @@
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendButton');
+        
+        // Configuration du webhook n8n
         const webhookUrl = 'https://n8n-pro.kaeyros.org/webhook/4b006081-ff51-46a1-9986-9ef046cd7255';
+        const corsProxy = 'https://corsproxy.io/?';
 
         // Intercepter les clics sur les liens de téléchargement CSV
         chatMessages.addEventListener('click', function(e) {
@@ -246,7 +249,11 @@
                 const originalText = link.textContent;
                 link.textContent = '⏳ Téléchargement...';
                 
-                fetch(link.href)
+                // Utiliser le proxy CORS pour télécharger le fichier
+                const fileUrl = link.href;
+                const proxiedUrl = corsProxy + encodeURIComponent(fileUrl);
+                
+                fetch(proxiedUrl)
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
                         return response.blob();
@@ -323,7 +330,10 @@
             chatInput.value = '';
             
             try {
-                const response = await fetch(webhookUrl, {
+                // Utiliser corsproxy.io pour contourner CORS
+                const proxiedWebhookUrl = corsProxy + encodeURIComponent(webhookUrl);
+                
+                const response = await fetch(proxiedWebhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
