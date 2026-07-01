@@ -18,10 +18,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         
         .chat-container {
-            width: 90%;
+            width: 100%;
             max-width: 900px;
             height: 90vh;
             background: white;
@@ -82,6 +83,7 @@
             padding: 12px 16px;
             border-radius: 12px;
             line-height: 1.5;
+            word-wrap: break-word;
         }
         
         .message.bot .message-content {
@@ -106,10 +108,15 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
+            cursor: pointer;
         }
         
         .message-content a:hover {
             text-decoration: underline;
+        }
+        
+        .message-content strong {
+            font-weight: 700;
         }
         
         .chat-input-container {
@@ -171,6 +178,33 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
     </style>
 </head>
 <body>
@@ -209,7 +243,6 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Afficher un indicateur de chargement
                 const originalText = link.textContent;
                 link.textContent = '⏳ Téléchargement...';
                 
@@ -238,6 +271,13 @@
                         setTimeout(() => {
                             link.textContent = originalText;
                         }, 2000);
+                        
+                        // Afficher un message d'erreur dans le chat
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        errorDiv.textContent = 'Erreur lors du téléchargement. Veuillez réessayer.';
+                        chatMessages.appendChild(errorDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
                     });
                 
                 return false;
@@ -260,7 +300,7 @@
                 .replace(/📗/g, '<span>📗</span>')
                 .replace(/📄/g, '<span>📄</span>')
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
+                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
                 .replace(/\n/g, '<br>');
             
             contentDiv.innerHTML = htmlText;
@@ -295,6 +335,10 @@
                                    localStorage.getItem('sessionId'))
                     })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 const botResponse = data.output || data.message || JSON.stringify(data);
